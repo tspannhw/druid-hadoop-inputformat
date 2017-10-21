@@ -43,6 +43,9 @@ final JavaPairRDD<NullWritable, InputRow> rdd = jsc.newAPIHadoopRDD(
 );
 ```
 
+
+Example of how to Read directly from Druid deep storage, into an RDD, and convert the RDD into a Dataframe:
+
 ```bash
 spark-shell --jars target/druid-hadoop-inputformat-0.1-SNAPSHOT.jar
 ```
