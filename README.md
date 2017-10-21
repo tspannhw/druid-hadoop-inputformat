@@ -16,7 +16,7 @@ To install this library, run `mvn install`. You can then include it in projects 
 
 ### Example
 
-Here's an example of creating an RDD in Spark:
+Java example of how to directly read Druid deep storage into a Spark RDD:
 
 ```java
 final JobConf jobConf = new JobConf();
@@ -44,7 +44,7 @@ final JavaPairRDD<NullWritable, InputRow> rdd = jsc.newAPIHadoopRDD(
 ```
 
 
-Example of how to Read directly from Druid deep storage, into an RDD, and convert the RDD into a Dataframe:
+Scala example of how to read directly from Druid deep storage, into an RDD, and convert the RDD into a Dataframe:
 
 ```bash
 spark-shell --jars target/druid-hadoop-inputformat-0.1-SNAPSHOT.jar
@@ -62,9 +62,10 @@ import org.apache.hadoop.io.NullWritable
 val jobConf = new JobConf();
 val coordHost = "localhost:8081"
 val dataSource = "data_minute"
-val interval = null      // Type: List<Interval>
-val filter = null        // Type: DimFilter
-val columns = null       // Type: List<String>
+val interval = null      // Type: List<Interval> // null gets all intervals
+val filter = null        // Type: DimFilter      // null passes no filters
+val columns = null       // Type: List<String>   // null gets all columns
+
 DruidInputFormat.setInputs(jobConf,coordHost,dataSource,null,null,null)
 
 val dataDF = sc.newAPIHadoopRDD(jobConf, classOf[DruidInputFormat], classOf[NullWritable], classOf[InputRow]).map{x => x._2}.map{x => (x.getTimestamp().toString(),x.getTimestampFromEpoch(),x.getDimension("function").get(0),x.getFloatMetric("value_sum"))}.toDF("timestring","epoch","tag","sum").select(date_format($"timestring", "yyyy-MM-dd'T'hh:mm:ss:SSS'Z'") as("time"),$"epoch",$"tag",$"sum")
