@@ -42,3 +42,29 @@ final JavaPairRDD<NullWritable, InputRow> rdd = jsc.newAPIHadoopRDD(
     InputRow.class
 );
 ```
+
+```bash
+spark-shell --jars target/druid-hadoop-inputformat-0.1-SNAPSHOT.jar
+```
+
+```scala
+import spark.implicits._
+import org.apache.spark.sql.types._
+import org.apache.spark.sql.functions._
+import org.apache.hadoop.mapred.JobConf
+import io.druid.data.input.InputRow
+import io.imply.druid.hadoop.DruidInputFormat
+import org.apache.hadoop.io.NullWritable
+
+val jobConf = new JobConf();
+val coordHost = "localhost:8081"
+val dataSource = "data_minute"
+val interval = null      // Type: List<Interval>
+val filter = null        // Type: DimFilter
+val columns = null       // Type: List<String>
+DruidInputFormat.setInputs(jobConf,coordHost,dataSource,null,null,null)
+
+val dataDF = sc.newAPIHadoopRDD(jobConf, classOf[DruidInputFormat], classOf[NullWritable], classOf[InputRow]).map{x => x._2}.map{x => (x.getTimestamp().toString(),x.getTimestampFromEpoch(),x.getDimension("function").get(0),x.getFloatMetric("value_sum"))}.toDF("timestring","epoch","tag","sum").select(date_format($"timestring", "yyyy-MM-dd'T'hh:mm:ss:SSS'Z'") as("time"),$"epoch",$"tag",$"sum")
+
+dataDF.show
+```
