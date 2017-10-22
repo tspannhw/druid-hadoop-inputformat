@@ -34,13 +34,30 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <druid.version>0.9.1.1</druid.version>
     <hadoop.version>2.7.1</hadoop.version>
+    <jackson.version>2.6.5</jackson.version>
   </properties>
 
   <dependencies>
+  	<dependency>
+  	  <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>io.druid</groupId>
       <artifactId>druid-indexing-hadoop</artifactId>
       <version>${druid.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
